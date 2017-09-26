@@ -134,6 +134,7 @@
     }
     _topCoverBackgroundColor = topCoverBackgroundColor;
     self.topCoverView.backgroundColor = topCoverBackgroundColor;
+    self.navigationBar.backgroundColor = topCoverBackgroundColor;
 }
 
 - (void)setBottomCoverBackgroundColor:(UIColor *)bottomCoverBackgroundColor {
