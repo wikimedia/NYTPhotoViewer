@@ -53,6 +53,8 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
 @property (nonatomic, readonly) UIView *referenceViewForCurrentPhoto;
 @property (nonatomic, readonly) CGPoint boundsCenterPoint;
 
+@property (nonatomic, getter=isStatusBarHidden) BOOL statusBarHidden;
+
 @end
 
 @implementation NYTPhotosViewController
@@ -142,7 +144,11 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
 }
 
 - (BOOL)prefersStatusBarHidden {
-    return YES;
+    return self.isStatusBarHidden;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
 }
 
 - (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
@@ -221,8 +227,6 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
     
     [self updateOverlayInformation];
     [self.view addSubview:self.overlayView];
-    
-    [self setOverlayViewHidden:YES animated:NO];
 }
 
 
@@ -430,6 +434,8 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
         
         [UIView animateWithDuration:NYTPhotosViewControllerOverlayAnimationDuration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionAllowAnimatedContent | UIViewAnimationOptionAllowUserInteraction animations:^{
             self.overlayView.alpha = hidden ? 0.0 : 1.0;
+            self.statusBarHidden = hidden;
+            [self setNeedsStatusBarAppearanceUpdate];
         } completion:^(BOOL finished) {
             self.overlayView.alpha = 1.0;
             self.overlayView.hidden = hidden;
@@ -437,6 +443,8 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
     }
     else {
         self.overlayView.hidden = hidden;
+        self.statusBarHidden = hidden;
+        [self setNeedsStatusBarAppearanceUpdate];
     }
 }
 
