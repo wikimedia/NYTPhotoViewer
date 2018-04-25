@@ -3,6 +3,7 @@
 Changes for users of the library currently on `develop`:
 
 - Share GIF with UIActivityViewController
+- Copy GIF with UIMenuController
 
 ## [1.2.0](https://github.com/NYTimes/NYTPhotoViewer/releases/tag/1.2.0)
 
