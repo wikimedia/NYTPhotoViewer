@@ -32,6 +32,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSData *imageData;
 
 /**
+ *  The UTType of the image data
+ */
+@property (nonatomic, readonly, nullable) NSString *imageDataUTType;
+
+/**
  *  A placeholder image for display while the image is loading.
  *
  *  This property is used if and only if `-imageData` returns `nil`.

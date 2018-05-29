@@ -71,8 +71,10 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
 
 - (void)copy:(id)sender {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    if (self.currentlyDisplayedPhoto.imageData) {
-        [pasteboard setData:self.currentlyDisplayedPhoto.imageData forPasteboardType:(NSString *)kUTTypeImage];
+    NSData *data = self.currentlyDisplayedPhoto.imageData;
+    NSString *type = self.currentlyDisplayedPhoto.imageDataUTType;
+    if (data && type) {
+        [pasteboard setData:data forPasteboardType:type];
     } else {
         [pasteboard setImage:self.currentlyDisplayedPhoto.image];
     }
@@ -85,7 +87,7 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-    BOOL containsImage = self.currentlyDisplayedPhoto.image || self.currentlyDisplayedPhoto.imageData;
+    BOOL containsImage = self.currentlyDisplayedPhoto.image || (self.currentlyDisplayedPhoto.imageData && self.currentlyDisplayedPhoto.imageDataUTType);
 
     if (self.shouldHandleLongPress && action == @selector(copy:) && containsImage) {
         return YES;
