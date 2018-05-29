@@ -71,10 +71,10 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
 
 - (void)copy:(id)sender {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    if (self.currentlyDisplayedPhoto.image) {
-        [pasteboard setImage:self.currentlyDisplayedPhoto.image];
+    if (self.currentlyDisplayedPhoto.imageData) {
+        [pasteboard setData:self.currentlyDisplayedPhoto.imageData forPasteboardType:(NSString *)kUTTypeImage];
     } else {
-        [pasteboard setData:self.currentlyDisplayedPhoto.imageData forPasteboardType:(NSString *) kUTTypeGIF];
+        [pasteboard setImage:self.currentlyDisplayedPhoto.image];
     }
 }
 
