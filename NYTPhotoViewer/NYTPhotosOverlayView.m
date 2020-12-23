@@ -20,9 +20,6 @@
 @property (nonatomic) UINavigationItem *navigationItem;
 @property (nonatomic) UINavigationBar *navigationBar;
 
-@property (nonatomic) UIView *topCoverView;
-@property (nonatomic) UIView *bottomCoverView;
-
 @end
 
 @implementation NYTPhotosOverlayView
@@ -33,8 +30,6 @@
     self = [super initWithFrame:frame];
     
     if (self) {
-        self.topCoverBackgroundColor = [UIColor clearColor];
-        self.bottomCoverBackgroundColor = [UIColor colorWithWhite:0 alpha:0.85];;
         [self setupNavigationBar];
     }
     
@@ -74,7 +69,7 @@
     self.navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
     
     // Make navigation bar background fully transparent.
-    self.navigationBar.backgroundColor = self.topCoverBackgroundColor;
+    self.navigationBar.backgroundColor = [UIColor clearColor];
     self.navigationBar.barTintColor = nil;
     self.navigationBar.translucent = YES;
     self.navigationBar.shadowImage = [[UIImage alloc] init];
@@ -102,21 +97,14 @@
     if (self.captionView == captionView) {
         return;
     }
-    
-    [self.bottomCoverView removeFromSuperview];
-    self.bottomCoverView = nil;
+
     [self.captionView removeFromSuperview];
     
     _captionView = captionView;
     
     self.captionView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:self.captionView];
-    
-    self.bottomCoverView = [[UIView alloc] init];
-    self.bottomCoverView.backgroundColor = self.bottomCoverBackgroundColor;
-    self.bottomCoverView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:self.bottomCoverView];
-    
+
     if ([self respondsToSelector:@selector(safeAreaLayoutGuide)] && self.captionViewRespectsSafeArea) {
         NSLayoutConstraint *bottomConstraint = [self.captionView.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor];
         NSLayoutConstraint *leftConstraint = [self.captionView.leftAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leftAnchor];
@@ -128,23 +116,6 @@
         NSLayoutConstraint *horizontalPositionConstraint = [NSLayoutConstraint constraintWithItem:self.captionView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0];
         [self addConstraints:@[bottomConstraint, widthConstraint, horizontalPositionConstraint]];
     }
-}
-
-- (void)setTopCoverBackgroundColor:(UIColor *)topCoverBackgroundColor {
-    if (_topCoverBackgroundColor == topCoverBackgroundColor) {
-        return;
-    }
-    _topCoverBackgroundColor = topCoverBackgroundColor;
-    self.topCoverView.backgroundColor = topCoverBackgroundColor;
-    self.navigationBar.backgroundColor = topCoverBackgroundColor;
-}
-
-- (void)setBottomCoverBackgroundColor:(UIColor *)bottomCoverBackgroundColor {
-    if (_bottomCoverBackgroundColor == bottomCoverBackgroundColor) {
-        return;
-    }
-    _bottomCoverBackgroundColor = bottomCoverBackgroundColor;
-    self.bottomCoverView.backgroundColor = bottomCoverBackgroundColor;
 }
 
 - (UIBarButtonItem *)leftBarButtonItem {
