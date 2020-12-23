@@ -9,6 +9,12 @@
 #import "NYTPhotosOverlayView.h"
 #import "NYTPhotoCaptionViewLayoutWidthHinting.h"
 
+@interface UIView (NYTSafeArea)
+
+@property (nonatomic, readonly, strong) UILayoutGuide *safeAreaLayoutGuide;
+
+@end
+
 @interface NYTPhotosOverlayView ()
 
 @property (nonatomic) UINavigationItem *navigationItem;
@@ -78,22 +84,18 @@
     self.navigationBar.items = @[self.navigationItem];
     
     [self addSubview:self.navigationBar];
-    
-    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:self.navigationBar attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.layoutMarginsGuide attribute:NSLayoutAttributeTop multiplier:1.0 constant:0.0];
-    NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.navigationBar attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0];
-    NSLayoutConstraint *horizontalPositionConstraint = [NSLayoutConstraint constraintWithItem:self.navigationBar attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0];
-    [self addConstraints:@[topConstraint, widthConstraint, horizontalPositionConstraint]];
-    
-    self.topCoverView = [[UIView alloc] init];
-    self.topCoverView.backgroundColor = self.topCoverBackgroundColor;
-    self.topCoverView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:self.topCoverView];
-    
-    topConstraint = [NSLayoutConstraint constraintWithItem:self.topCoverView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0.0];
-    widthConstraint = [NSLayoutConstraint constraintWithItem:self.topCoverView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0];
-    horizontalPositionConstraint = [NSLayoutConstraint constraintWithItem:self.topCoverView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0];
-     NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:self.topCoverView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.navigationBar attribute:NSLayoutAttributeTop multiplier:1.0 constant:0.0];
-    [self addConstraints:@[topConstraint, bottomConstraint, widthConstraint, horizontalPositionConstraint]];
+
+    if ([self respondsToSelector:@selector(safeAreaLayoutGuide)]) {
+        NSLayoutConstraint *topConstraint = [self.navigationBar.topAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor];
+        NSLayoutConstraint *leftConstraint = [self.navigationBar.leftAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leftAnchor];
+        NSLayoutConstraint *rightConstraint = [self.navigationBar.rightAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.rightAnchor];
+        [self addConstraints:@[topConstraint, leftConstraint, rightConstraint]];
+    } else {
+        NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:self.navigationBar attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0.0];
+        NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.navigationBar attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0];
+        NSLayoutConstraint *horizontalPositionConstraint = [NSLayoutConstraint constraintWithItem:self.navigationBar attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0];
+        [self addConstraints:@[topConstraint, widthConstraint, horizontalPositionConstraint]];
+    }
 }
 
 - (void)setCaptionView:(UIView *)captionView {
@@ -110,22 +112,22 @@
     self.captionView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:self.captionView];
     
-    NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:self.captionView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.layoutMarginsGuide attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
-    NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.captionView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0];
-    NSLayoutConstraint *horizontalPositionConstraint = [NSLayoutConstraint constraintWithItem:self.captionView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0];
-    [self addConstraints:@[bottomConstraint, widthConstraint, horizontalPositionConstraint]];
-    
-    
     self.bottomCoverView = [[UIView alloc] init];
     self.bottomCoverView.backgroundColor = self.bottomCoverBackgroundColor;
     self.bottomCoverView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:self.bottomCoverView];
     
-    NSLayoutConstraint *topConstraint = [NSLayoutConstraint constraintWithItem:self.bottomCoverView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.captionView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
-    widthConstraint = [NSLayoutConstraint constraintWithItem:self.bottomCoverView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0];
-    horizontalPositionConstraint = [NSLayoutConstraint constraintWithItem:self.bottomCoverView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0];
-    bottomConstraint = [NSLayoutConstraint constraintWithItem:self.bottomCoverView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
-    [self addConstraints:@[topConstraint, bottomConstraint, widthConstraint, horizontalPositionConstraint]];
+    if ([self respondsToSelector:@selector(safeAreaLayoutGuide)] && self.captionViewRespectsSafeArea) {
+        NSLayoutConstraint *bottomConstraint = [self.captionView.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor];
+        NSLayoutConstraint *leftConstraint = [self.captionView.leftAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leftAnchor];
+        NSLayoutConstraint *rightConstraint = [self.captionView.rightAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.rightAnchor];
+        [self addConstraints:@[bottomConstraint, leftConstraint, rightConstraint]];
+    } else {
+        NSLayoutConstraint *bottomConstraint = [NSLayoutConstraint constraintWithItem:self.captionView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
+        NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:self.captionView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0];
+        NSLayoutConstraint *horizontalPositionConstraint = [NSLayoutConstraint constraintWithItem:self.captionView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0];
+        [self addConstraints:@[bottomConstraint, widthConstraint, horizontalPositionConstraint]];
+    }
 }
 
 - (void)setTopCoverBackgroundColor:(UIColor *)topCoverBackgroundColor {
